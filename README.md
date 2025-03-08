@@ -161,3 +161,89 @@ Next.js, being a **React framework**, offers powerful rendering capabilities and
 | **Suitable for SEO**               | Not ideal for SEO without additional tools   | Ideal for SEO with SSR/SSG                       |
 
 
+## Routing in Next.js: Pages Router vs App Router
+
+### **Comparison Table: Pages Router vs App Router**
+
+| Feature                      | **Pages Router**                                      | **App Router**                                             |
+|------------------------------|-------------------------------------------------------|------------------------------------------------------------|
+| **Folder Structure**          | `pages` directory                                    | `app` directory                                            |
+| **Routing Mechanism**         | File-based (map files directly to routes)            | Folder-based with nested routes and layouts                |
+| **Dynamic Routing**           | Supports dynamic routes with `[param].js`             | Supports dynamic routes with `[param]/page.js` and nesting |
+| **Example**                   | `/pages/blog/[id].js` becomes `/blog/:id`             | `/app/blog/[id]/page.js` becomes `/blog/:id`               |
+| **Layouts**                   | No built-in support for layouts                      | Supports nested layouts with shared layout components      |
+| **Example**                   | No concept of layouts (each page is standalone)      | `/app/layout.js` can be shared across pages and nested layouts like `/app/blog/layout.js` |
+| **Data Fetching**             | `getStaticProps`, `getServerSideProps`, `getInitialProps` | Supports new hooks for data fetching (`use`, `fetch`)      |
+| **Example**                   | `getStaticProps` in `/pages/blog/[id].js` for data fetching | `fetch()` and `use` hooks inside `/app/blog/[id]/page.js` |
+| **Code Splitting**            | Automatic based on pages in `pages` directory         | Automatic, but with finer control over which parts are rendered |
+| **Example**                   | Each page is a separate bundle (e.g., `index.js`, `about.js`) | Pages like `/app/blog/[id]/page.js` are bundled with specific server components |
+| **Server Components**         | No support for server components                      | Supports server components, reducing client-side JavaScript |
+| **Example**                   | No server-side rendering or components                | `/app/blog/[id]/page.js` can fetch data on the server side and render it directly |
+| **SEO/Performance**           | Good, with support for static and dynamic pages       | Excellent, with support for server-side rendering and reduced JavaScript |
+| **Example**                   | SEO optimized with static generation in `/pages/blog/[id].js` | SEO optimized with server-side rendering in `/app/blog/[id]/page.js` |
+| **Complexity**                | Simple to use and configure                          | More complex, with new patterns for advanced use cases     |
+| **Example**                   | Simple static blog with basic pages                   | Large e-commerce site with multiple layouts, authentication, and dynamic content |
+| **Use Case**                  | Simple applications with static or dynamic routes    | Large-scale applications with complex nested layouts, server-side rendering, and UI logic |
+| **Example**                   | Blog with basic routing (`/pages/index.js`, `/pages/blog/[id].js`) | E-commerce site with multiple layouts, authentication, and dynamic content |
+
+---
+
+## Example Implementations
+
+### **Pages Router Example (Simple Blog)**
+
+- **File Structure:**
+  ```plaintext
+  /pages
+    /index.js           --> Home page route ("/")
+    /about.js           --> About page route ("/about")
+    /blog/[id].js       --> Dynamic blog post route ("/blog/:id")
+
+
+### Dynamic Routing in /pages/blog/[id].js:
+import { useRouter } from 'next/router';
+
+function BlogPost() {
+  const router = useRouter();
+  const { id } = router.query;
+
+  return <div>Blog post with ID: {id}</div>;
+}
+export default BlogPost;
+
+
+### App Router Example (E-Commerce with Nested Layouts)
+File Structure:
+
+/app
+  /layout.js          --> Root layout for the app
+  /page.js            --> Home page route ("/")
+  /about/page.js      --> About page route ("/about")
+  /blog/[id]/page.js  --> Dynamic blog post route ("/blog/:id")
+
+### Using Layouts in /app/layout.js:
+
+export default function Layout({ children }) {
+  return (
+    <div>
+      <header>Header Component</header>
+      <main>{children}</main>
+    </div>
+  );
+}
+
+
+### Dynamic Routing in /app/blog/[id]/page.js:
+
+export default function BlogPost({ params }) {
+  const { id } = params; // id is extracted from dynamic route parameter
+
+  return <div>Blog post with ID: {id}</div>;
+}
+
+### Key Differences Summary:
+Pages Router: More straightforward and simpler to use for smaller or static applications. Ideal for simple routing with direct mappings between files and routes.
+App Router: Provides more flexibility and control, ideal for complex applications with multiple layouts, dynamic routes, server components, and more advanced routing requirements.
+
+### Conclusion
+Both Pages Router and App Router in Next.js offer excellent capabilities, but the App Router brings more advanced features like server components, nested layouts, and finer control over routing, making it the preferred choice for large and complex applications. For simpler, more static applications, the Pages Router remains a great option for ease of use and quick setup.
